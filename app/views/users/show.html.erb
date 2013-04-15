@@ -18,6 +18,7 @@
       <ol class="microposts">
         <%= render @microposts %>
       </ol>
+      <%= page_entries_info @microposts %>
       <%= will_paginate @microposts %>
     <% end %>
   </div>
