@@ -1,8 +1,0 @@
-<% if signed_in? %>
-	<% provide(:title, @tag.name) %>
-	<h1>Microposts Tagged with <%= @tag.name %></h1>
-	<%= @feed_items = @tag.feed %>
-	<%= render 'shared/signed_in' %>
-<% else %>
-	<%= render 'shared/signed_out' %>
-<% end %>
