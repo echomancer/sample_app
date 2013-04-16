@@ -2,7 +2,7 @@
   <span class="content"><%= micropost.content %></span>
   <span class="content"> Tags:
     <% if !(micropost.tag_list.blank?) %>
-      <%= micropost.tag_list.map {|t| link_to t, tag_path(t)}.join(', ') %>
+      <%= raw micropost.tags.map(&:name).map {|t| link_to t, tag_path(t)}.join(', ') %>
     <% else %>
       none
     <% end %>

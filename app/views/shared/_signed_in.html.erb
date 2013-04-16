@@ -11,7 +11,7 @@
       </section>
     </aside>
     <div class="span8">
-        <% if current_page?(microposts_path) %>
+        <% if !current_page?(root_path) %>
           <h3>Microposts Tags</h3>
           <div id="tag_cloud">
             <% tag_cloud Micropost.tag_counts, %w{s m l} do |tag, css_class| %>
