@@ -1,7 +1,27 @@
 class Micropost < ActiveRecord::Base
-  has_many :hash_tags
-  has_many :tags, through: :hash_tags
   belongs_to :user
+  has_many :taggings
+  has_many :tags, through: :taggings
+
+  def self.tagged_with(name)
+    Tag.find_by_name!(name).microposts
+  end
+
+  def self.tag_counts
+    Tag.select("tags.*, count(taggings.tag_id) as count").
+      joins(:taggings).group("taggings.tag_id")
+  end
+  
+  def tag_list
+    tags.map(&:name).join(", ")
+  end
+  
+  def tag_list=(names)
+    self.tags = names.split(",").map do |n|
+      Tag.where(name: n.strip).first_or_create!
+    end
+  end
+
   default_scope -> { order('created_at DESC') }
   validates :content, presence: true, length: { maximum: 140 }
   validates :user_id, presence: true
@@ -12,21 +32,6 @@ class Micropost < ActiveRecord::Base
                          WHERE follower_id = :user_id"
     where("user_id IN (#{followed_user_ids}) OR user_id = :user_id", 
           user_id: user.id)
-  end
-
-  def tag_list
-    tags.join(", ")
-  end
-
-
-  # Create a list of all tags associated with this post from a string of tags
-  def tag_list=(tags_string)
-    # make a list of comma seperated tags keeping only unique ones
-    tag_names = tags_string.to_s.split(",").collect{|s| s.strip.downcase }.uniq
-    # Add new or found tags to be associated with this post
-    new_or_found_tags = tag_names.collect{|name| Tag.find_or_create_by(name: name)}
-    # Associated these tags
-    self.tags = new_or_found_tags
   end
 end
 

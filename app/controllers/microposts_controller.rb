@@ -3,6 +3,12 @@ class MicropostsController < ApplicationController
   before_action :correct_user,   only: :destroy
 
   def index
+    @micropost = current_user.microposts.new
+    if params[:tag]
+      @feed_items = Micropost.tagged_with(params[:tag]).paginate(page: params[:page])
+    else
+      @feed_items = Micropost.all.paginate(page: params[:page])
+    end
   end
 
   def create
@@ -24,7 +30,7 @@ class MicropostsController < ApplicationController
   private
 
     def micropost_params
-      params.require(:micropost).permit(:content)
+      params.require(:micropost).permit(:content,:tag_list)
     end
 
     def correct_user

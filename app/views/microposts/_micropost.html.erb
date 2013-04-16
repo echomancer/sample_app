@@ -1,11 +1,10 @@
 <li>
   <span class="content"><%= micropost.content %></span>
-  <span class="content">
-    <% if !(micropost.tags.empty?) %>
-      Tags:
-    	<%= micropost.tags.each do |tag| %>
-    		<%= link_to tag.name, tag_path(tag)  %>
-    	<% end %>
+  <span class="content"> Tags:
+    <% if !(micropost.tag_list.blank?) %>
+      <%= micropost.tag_list.map {|t| link_to t, tag_path(t)}.join(', ') %>
+    <% else %>
+      none
     <% end %>
   </span>
   <span class="timestamp">

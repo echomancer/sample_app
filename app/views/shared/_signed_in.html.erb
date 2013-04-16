@@ -11,7 +11,15 @@
       </section>
     </aside>
     <div class="span8">
-      <h3>Micropost Feed</h3>
-      <%= render 'shared/feed' %>
+        <% if current_page?(microposts_path) %>
+          <h3>Microposts Tags</h3>
+          <div id="tag_cloud">
+            <% tag_cloud Micropost.tag_counts, %w{s m l} do |tag, css_class| %>
+            <%= link_to tag.name, tag_path(tag.name), class: css_class %>
+            <% end %>
+          </div>
+        <% end %>
+        <h3>Micropost Feed</h3>
+        <%= render 'shared/feed' %>
     </div>
   </div>  
