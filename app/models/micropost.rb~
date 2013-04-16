@@ -9,7 +9,7 @@ class Micropost < ActiveRecord::Base
 
   def self.tag_counts
     Tag.select("tags.*, count(taggings.tag_id) as count").
-      joins(:taggings).group("tags.id")
+      joins(:taggings).group("taggings.tag_id")
   end
   
   def tag_list
