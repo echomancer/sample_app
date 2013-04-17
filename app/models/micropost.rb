@@ -18,9 +18,14 @@ class Micropost < ActiveRecord::Base
   end
   
   def tag_list=(names)
-    self.tags = names.split(",").map do |n|
-      Tag.where(name: n.strip).first_or_create!
-    end
+    tag_names = names.split(",").collect{ |s| s.strip.downcase }.uniq
+    dog_tags = tag_names.collect{ |name| Tag.find_or_create_by(name: name)}
+    self.tags = dog_tags
+
+    # Alternate create method
+    #self.tags = names.split(",").map do |n|
+    #  Tag.where(name: n.strip).first_or_create!
+    #end
   end
   # end of Tagging functions
 
