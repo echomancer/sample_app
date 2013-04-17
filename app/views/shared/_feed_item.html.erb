@@ -1,18 +1,18 @@
 <li id="<%= feed_item.id %>">
   <%= link_to gravatar_for(feed_item.user), feed_item.user %>
-    <span class="user">
-      <%= link_to feed_item.user.name, feed_item.user %>
-    </span>
-    <span class="user">
-      <%= feed_item.user.username %>
-    </span>
-    <span class="content"><%= feed_item.content %></span>
-    <span class="tags">Tags:  
-      <% if feed_item.tags.blank? %>
-        none
-      <% else %>
-        <%= raw feed_item.tags.map(&:name).map { |t| link_to t, tag_path(t) }.join(', ') %>
-      <% end %>
+    <% if feed_item.user.nameshow %>
+      <span class="user">
+        <%= link_to feed_item.user.name, feed_item.user %>
+      </span>
+    <% else %>
+      <span class="user">
+        <%= link_to feed_item.user.username, feed_item.user %>
+      </span>
+    <% end %>
+    <span class="content">
+      <%= feed_item.content %>
+      <% if !feed_item.tags.blank? %> | Tags: <% end %>
+      <%= raw feed_item.tags.map(&:name).map { |t| link_to t, tag_path(t) }.join(', ') %>
     </span>
     <span class="timestamp">
       Posted <%= time_ago_in_words(feed_item.created_at) %> ago.

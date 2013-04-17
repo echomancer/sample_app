@@ -19,10 +19,6 @@ class UsersController < ApplicationController
 
   def create
     @user = User.new(user_params)
-    # Determine if the user exists already (check username/email)
-    @found = User.find_by(email: params[:email])
-
-    # if 
       if @user.save
         sign_in @user
         flash[:success] = "Welcome to the Sample App Yo!"
@@ -36,12 +32,15 @@ class UsersController < ApplicationController
   end
 
   def update
-    # Make sure they aren't tring to take someone's username or email
-
-    if @user.update_attributes(user_params)
-      flash[:success] = "Profile updated"
-      sign_in @user
-      redirect_to @user
+    # Make sure you don't try to save to someone else's username or email
+    if test_email_username?
+      if @user.update_attributes(user_params)
+        flash[:success] = "Profile updated"
+        sign_in @user
+        redirect_to @user
+      else
+        render 'edit'
+      end
     else
       render 'edit'
     end
@@ -71,7 +70,30 @@ class UsersController < ApplicationController
 
     def user_params
       params.require(:user).permit(:name, :username,:email, :password,
-                                   :password_confirmation)
+                                   :password_confirmation,:nameshow)
+    end
+
+    # Find out if either entered email or username is already
+    #   in use.
+    def test_email_username?
+      # get the user by the supplied email
+      here = true
+      found = User.find_by(email: params[:email])
+      # If it's not nil and not equal to current user
+      if ( !found.nil? && !@user.equal(found))
+        # Someone already has that email
+        flash[:error] = "Email already in use"
+        here = false
+      end
+      # get the user by the supplied username
+      found  = User.find_by(username: params[:username])
+      # If it's not nil and not equal to current user
+      if ( !found.nil? && !@user.equal(found))
+        flash[:error] = "Username already in use"
+        here = false
+      end
+      # Since username and email aren't currently being used
+      return here
     end
 
     # Before filters
