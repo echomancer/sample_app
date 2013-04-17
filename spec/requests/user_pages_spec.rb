@@ -202,17 +202,18 @@ describe "User pages" do
       end
 
       describe "after submission" do
-	before { click_button submit }
+	       before { click_button submit }
 	
-	it { should have_title('Sign up')}
-	it { should have_error_message('error')}
+	       it { should have_title('Sign up')}
+	       it { should have_error_message('error')}
       end
     end
 
     describe "with valid information" do
       before do
-        fill_in "Name",             with: "Example User"
-        fill_in "Email",            with: "user@example.com"
+        fill_in "Name",             with: "Another User"
+        fill_in "Username",         with: "Damien3"
+        fill_in "Email",            with: "user3@example.com"
         fill_in "Password",         with: "foobar"
         fill_in "Confirm Password", with: "foobar"
       end
@@ -223,7 +224,7 @@ describe "User pages" do
 
       describe "after saving the user" do
       	before {click_button submit}
-      	let(:user) {User.find_by(email: 'user@example.com')}
+      	let(:user) {User.find_by(email: 'user3@example.com')}
 
         it {should have_link('Sign out')}
       	it {should have_title(user.name)}

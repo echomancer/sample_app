@@ -9,6 +9,7 @@ end
 
 def make_users
   admin = User.create!(name:     "Example User",
+                       username: "MasterRace",
                        email:    "example@railstutorial.org",
                        password: "foobar",
                        password_confirmation: "foobar",
@@ -16,8 +17,10 @@ def make_users
   99.times do |n|
     name  = Faker::Name.name
     email = "example-#{n+1}@railstutorial.org"
+    username = "example-#{n+1}"
     password  = "password"
     User.create!(name:     name,
+                 username: username,
                  email:    email,
                  password: password,
                  password_confirmation: password)
@@ -28,7 +31,7 @@ def make_microposts
   users = User.all(limit: 6)
   50.times do
     content = Faker::Lorem.sentence(5)
-    tag_list = Faker::Lorem.word
+    tag_list = Faker::Lorem.word + ", " + Faker::Lorem.word
     users.each { |user| user.microposts.create!(content: content,tag_list: tag_list) }
   end
 end

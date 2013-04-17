@@ -92,6 +92,11 @@ describe "Authentication" do
           before { visit followers_user_path(user) }
           it { should have_title('Sign in') }
         end
+
+        describe "visiting the microposts page" do
+          before { visit microposts_path}
+          it { should have_title('Sign in')}
+        end
       end
 
       let(:user) { FactoryGirl.create(:user) }

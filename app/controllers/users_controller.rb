@@ -19,19 +19,25 @@ class UsersController < ApplicationController
 
   def create
     @user = User.new(user_params)
-    if @user.save
-      sign_in @user
-      flash[:success] = "Welcome to the Sample App Yo!"
-      redirect_to @user
-    else
-      render 'new'
-    end
+    # Determine if the user exists already (check username/email)
+    @found = User.find_by(email: params[:email])
+
+    # if 
+      if @user.save
+        sign_in @user
+        flash[:success] = "Welcome to the Sample App Yo!"
+        redirect_to @user
+      else
+        render 'new'
+      end
   end
 
   def edit
   end
 
   def update
+    # Make sure they aren't tring to take someone's username or email
+
     if @user.update_attributes(user_params)
       flash[:success] = "Profile updated"
       sign_in @user
@@ -64,7 +70,7 @@ class UsersController < ApplicationController
   private
 
     def user_params
-      params.require(:user).permit(:name, :email, :password,
+      params.require(:user).permit(:name, :username,:email, :password,
                                    :password_confirmation)
     end
 

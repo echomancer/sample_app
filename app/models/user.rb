@@ -7,9 +7,12 @@ class User < ActiveRecord::Base
                                    dependent:   :destroy
   has_many :followers, through: :reverse_relationships, source: :follower
 
-	before_save {self.email = email.downcase}
+	before_save :sanatize
 	before_save :create_remember_token
 	validates :name, presence: true, length: {maximum: 50}
+  VALID_USERNAME_REGEX = /\A[A-Za-z0-9_-]+\z/
+  validates :username, presence: true, length: {minimum: 5, maximum: 20},
+          format: {with: VALID_USERNAME_REGEX}, uniqueness: { case_sensitive: true}
  	VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z/i  
  	validates :email, presence: true, format: { with: VALID_EMAIL_REGEX },
  					uniqueness: { case_sensitive: false}
@@ -38,4 +41,21 @@ class User < ActiveRecord::Base
  		def create_remember_token
  			self.remember_token = SecureRandom.urlsafe_base64
  		end
+
+    # Sanatize a gmail email address (remove dots and +label)
+    def sanatize
+      # Go ahead and downcase the email
+      self.email = email.downcase
+      # Check to see if it's a gmail address
+      if /(@gmail.com)/.match(self.email)
+        # Split at @  to get first part of email
+        parts = email.split(/@/)
+        # Take out the + tagged part
+        firstpart = parts.first.split(/\+/)
+        # Remove all the dots
+        first = firstpart.first.gsub(/\./, "")
+        # Save back as a normal gmail address
+        self.email = first + "@" + parts.last
+      end
+    end
 end

@@ -1,12 +1,13 @@
 require 'spec_helper'
 
 describe User do
-	before {@user = User.new(name: "Example User", email: "user@example.com",
+	before {@user = User.new(name: "Example User", username: "Damien", email: "user@gmail.com",
                             password: "foobar", password_confirmation: "foobar")}
 
 	subject {@user}
 
 	it {should respond_to(:name)}
+  it {should respond_to(:username)}
 	it {should respond_to(:email)}
   it {should respond_to(:password_digest)}
   it {should respond_to(:password)}
@@ -45,7 +46,6 @@ describe User do
       it { should_not be_following(other_user) }
       its(:followed_users) { should_not include(other_user) }
     end
-
   end
   
   describe "micropost associations" do
@@ -91,9 +91,6 @@ describe User do
         end
       end
     end
-
-
-
   end
 
 
@@ -121,7 +118,7 @@ describe User do
     it { should be_invalid }
   end
 
-  describe "return value of authenticate method" do
+  describe "return value of authenticate method for email" do
     before { @user.save }
     let(:found_user) { User.find_by(email: @user.email) }
 
@@ -136,6 +133,23 @@ describe User do
       specify { expect(user_for_invalid_password).to be_false }
     end
   end
+
+  describe "return value of authenticate method for username" do
+    before { @user.save }
+    let(:found_user) { User.find_by(username: @user.username) }
+
+    describe "with valid password" do
+      it { should eql(found_user.authenticate(@user.password)) }
+    end
+
+    describe "with invalid password" do
+      let(:user_for_invalid_password) { found_user.authenticate("invalid") }
+
+      it { should_not eql(user_for_invalid_password) }
+      specify { expect(user_for_invalid_password).to be_false }
+    end
+  end
+
   describe "when password is not present" do
     before {@user.password = @user.password_confirmation = " "}
     it {should_not be_valid}
@@ -161,6 +175,28 @@ describe User do
     before { @user.name = "a" * 51 }
     it { should_not be_valid }
 	end
+
+  # Added tests for new username
+  describe "when username is not present" do
+    before {@user.username = " "}
+    it { should_not be_valid}
+  end
+
+  describe "when username is too long" do
+    before { @user.username = "a"*21 }
+    it { should_not be_valid}
+  end
+
+  describe "when username is too short" do
+    before { @user.username = "a"*4}
+    it { should_not be_valid}
+  end
+
+  # Basic test for invalid characters in username
+  describe "when username format is invalid" do
+    before { @user.username = "Some thing2"}
+    it { should_not be_valid}
+  end
 
 	describe "when email is not present" do
 		before {@user.email = " "}
@@ -198,7 +234,7 @@ describe User do
    	end
   end
 
-  describe "when email address is already taken" do
+  describe "when username and email address is already taken" do
     before do
       user_with_same_email = @user.dup
       user_with_same_email.email = @user.email.upcase
@@ -206,5 +242,39 @@ describe User do
     end
 
     it { should_not be_valid }
+  end
+
+  describe "when username is already taken but email is not" do
+    before do
+      user_with_same_username = @user.dup
+      user_with_same_username.email = "user1@gmail.com"
+      user_with_same_username.save
+    end
+
+    it { should_not be_valid}
+  end
+
+  describe "when email is already taken but username is not" do
+    before do
+      user_with_same_emailname = @user.dup
+      user_with_same_emailname.username = "Damien2"
+      user_with_same_emailname.save
+    end
+
+    it { should_not be_valid}
+  end
+
+
+  #Test for gmail duplication problem
+  describe "when gmail address is already taken" do
+    before do
+      user_with_same_gmail = @user.dup
+      # Unique username
+      user_with_same_gmail.username = "Damien1"
+      user_with_same_gmail.email = "u.s.e.r+spam@gmail.com"
+      user_with_same_gmail.save
+    end
+
+    it { should_not be_valid}
   end
 end

@@ -3,6 +3,7 @@ class Micropost < ActiveRecord::Base
   has_many :taggings
   has_many :tags, through: :taggings
 
+  # Functions to help with adding tags
   def self.tagged_with(name)
     Tag.find_by_name!(name).microposts
   end
@@ -21,6 +22,7 @@ class Micropost < ActiveRecord::Base
       Tag.where(name: n.strip).first_or_create!
     end
   end
+  # end of Tagging functions
 
   default_scope -> { order('created_at DESC') }
   validates :content, presence: true, length: { maximum: 140 }
