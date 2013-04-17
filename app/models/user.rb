@@ -20,6 +20,15 @@ class User < ActiveRecord::Base
  	validates :password_confirmation, presence: true
  	validates :password, length: { minimum: 6}
   
+  # The name visible depending on nameshow
+  def show
+    if self.nameshow
+      return self.name
+    else
+      return self.username
+    end
+  end
+
   def feed
     Micropost.from_users_followed_by(self)
   end
