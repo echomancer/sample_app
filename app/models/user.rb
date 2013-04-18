@@ -23,9 +23,9 @@ class User < ActiveRecord::Base
   # The name visible depending on nameshow
   def show
     if self.nameshow
-      return self.name
+      return full_name
     else
-      return self.username
+      return "@" + self.username
     end
   end
 
@@ -66,5 +66,10 @@ class User < ActiveRecord::Base
         # Save back as a normal gmail address
         self.email = first + "@" + parts.last
       end
+    end
+
+      # Return a formatted username and fullname(if  added)
+    def full_name
+      return "(" + self.name + ")@" + self.username
     end
 end

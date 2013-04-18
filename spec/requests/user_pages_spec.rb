@@ -51,7 +51,7 @@ describe "User pages" do
 
       it "should list each user" do
         User.paginate(page: 1).each do |user|
-          expect(page).to have_selector('li', text: user.name)
+          expect(page).to have_selector('li', text: user.show)
         end
       end
     end
@@ -90,20 +90,23 @@ describe "User pages" do
     end
 
     describe "with valid information" do
-      let(:new_name)  { "New Name" }
-      let(:new_email) { "new@example.com" }
+      let(:new_name)    { "New Name" }
+      let(:new_username){ "newuser"}
+      let(:new_email)   { "new@example.com" }
       before do
         fill_in "Name",             with: new_name
+        fill_in "Username",         with: new_username
         fill_in "Email",            with: new_email
         fill_in "Password",         with: user.password
         fill_in "Confirm Password", with: user.password
         click_button "Save changes"
       end
 
-      it { should have_title(new_name) }
+      it { should have_title("@newuser") }
       it { should have_selector('div.alert.alert-success') }
       it { should have_link('Sign out', href: signout_path) }
       specify { expect(user.reload.name).to  eql(new_name) }
+      specify { expect(user.reload.username).to eql(new_username)}
       specify { expect(user.reload.email).to eql(new_email) }
     end
 
@@ -130,8 +133,8 @@ describe "User pages" do
 
     before {visit user_path(user)}
 
-    it{should have_content(user.name)}
-    it{should have_title(user.name)}
+    it{should have_content(user.show)}
+    it{should have_title(user.show)}
 
     describe "microposts" do
       it { should have_content(m1.content) }
@@ -227,7 +230,7 @@ describe "User pages" do
       	let(:user) {User.find_by(email: 'user3@example.com')}
 
         it {should have_link('Sign out')}
-      	it {should have_title(user.name)}
+      	it {should have_title(user.show)}
       	it {should have_selector('div.alert.alert-success', text: 'Welcome')}
       end
     end
