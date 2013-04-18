@@ -102,7 +102,7 @@ describe "User pages" do
         click_button "Save changes"
       end
 
-      it { should have_title("@newuser") }
+      it { should have_title(new_username) }
       it { should have_selector('div.alert.alert-success') }
       it { should have_link('Sign out', href: signout_path) }
       specify { expect(user.reload.name).to  eql(new_name) }

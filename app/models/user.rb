@@ -23,9 +23,9 @@ class User < ActiveRecord::Base
   # The name visible depending on nameshow
   def show
     if self.nameshow
-      return full_name
+      return self.name     # full_name
     else
-      return "@" + self.username
+      return self.username
     end
   end
 
@@ -68,7 +68,7 @@ class User < ActiveRecord::Base
       end
     end
 
-      # Return a formatted username and fullname(if  added)
+    # Return a formatted username and fullname
     def full_name
       return "(" + self.name + ")@" + self.username
     end

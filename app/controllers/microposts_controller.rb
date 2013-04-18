@@ -13,6 +13,21 @@ class MicropostsController < ApplicationController
 
   def create
     @micropost = current_user.microposts.build(micropost_params)
+
+    # Find the reply to in the content and set the in_reply_to to their id
+    reply = @micropost.content.match(/\A@\w{6,20}\s/)
+    # If they used a valid username at the start of a post
+    if(reply)
+      # Remove the @ symbol and trailing space
+      name = reply[0].gsub(/[@|\s]+/,"")
+      user = User.find_by(username: name)
+      # If they gave us a valid user set the in_reply_to
+      if(user)
+        @micropost.in_reply_to = user.id
+      end
+    end
+    # End adding reply to micropost
+
     if @micropost.save
       flash[:success] = "Micropost created!"
       redirect_to root_url
